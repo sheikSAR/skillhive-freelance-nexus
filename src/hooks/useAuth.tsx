@@ -1,6 +1,6 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/services/api";
 
 interface User {
   id: number;
@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Check for stored user on mount
     const storedUser = localStorage.getItem("skillhive-user");
     if (storedUser) {
       try {
@@ -38,66 +37,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
   
-  // For demo purposes, we'll use mock data
-  const mockStudents = [
-    { id: 1, name: "John Doe", email: "student@example.com", password: "password", role: "student" },
-    { id: 2, name: "Jane Smith", email: "freelancer@example.com", password: "password", role: "freelancer" }
-  ];
-  
-  const mockClients = [
-    { id: 1, name: "Acme Corp", email: "client@example.com", password: "password", role: "client" }
-  ];
-  
   const login = async (email: string, password: string, role: "student" | "client"): Promise<boolean> => {
-    // Simulate API request delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    setLoading(true);
     try {
-      // Check mock data
-      const userList = role === "student" ? mockStudents : mockClients;
-      const foundUser = userList.find(u => u.email === email && u.password === password);
+      const loginFn = role === "student" ? api.studentLogin : api.clientLogin;
+      const userData = await loginFn({ email, password });
       
-      if (foundUser) {
-        // Remove password before storing
-        const { password: _, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword as User);
-        localStorage.setItem("skillhive-user", JSON.stringify(userWithoutPassword));
-        toast({
-          title: "Login successful!",
-          description: `Welcome back, ${foundUser.name}!`,
-        });
-        return true;
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
-        return false;
-      }
+      setUser(userData);
+      localStorage.setItem("skillhive-user", JSON.stringify(userData));
+      
+      toast({
+        title: "Login successful!",
+        description: `Welcome back, ${userData.name}!`,
+      });
+      return true;
     } catch (error) {
       toast({
-        title: "Login error",
-        description: "Something went wrong. Please try again.",
+        title: "Login failed",
+        description: "Invalid email or password. Please try again.",
         variant: "destructive",
       });
       return false;
+    } finally {
+      setLoading(false);
     }
   };
   
   const register = async (userData: any, role: "student" | "client"): Promise<boolean> => {
-    // Simulate API request delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    setLoading(true);
     try {
-      // Create a new mock user
-      const newUser = {
-        id: Math.floor(Math.random() * 1000),
-        ...userData,
-        role: role === "student" ? "student" : "client"
-      };
+      const registerFn = role === "student" ? api.registerStudent : api.registerClient;
+      await registerFn(userData);
       
-      // Simulate successful registration
       toast({
         title: "Registration successful!",
         description: "You can now log in with your credentials.",
@@ -110,6 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         variant: "destructive",
       });
       return false;
+    } finally {
+      setLoading(false);
     }
   };
   

@@ -1,4 +1,3 @@
-
 import { Github, Mail, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -23,7 +22,7 @@ export function Footer() {
                 <span className="sr-only">Twitter</span>
               </a>
               <a href="#" className="text-foreground/70 hover:text-foreground">
-                <GitHub size={20} />
+                <Github size={20} />
                 <span className="sr-only">GitHub</span>
               </a>
               <a href="#" className="text-foreground/70 hover:text-foreground">

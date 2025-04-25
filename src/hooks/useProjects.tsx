@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/services/api';
@@ -24,7 +25,14 @@ export function useProjects() {
     setLoading(true);
     try {
       const data = await api.getClientProjects();
-      setProjects(data);
+      // Make sure skills_required is always an array
+      const formattedData = data.map((project: any) => ({
+        ...project,
+        skills_required: typeof project.skills_required === 'string' 
+          ? project.skills_required.split(',').map((s: string) => s.trim()) 
+          : project.skills_required || []
+      }));
+      setProjects(formattedData);
       setError(null);
     } catch (err) {
       setError('Failed to load projects');

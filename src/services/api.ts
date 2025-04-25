@@ -30,10 +30,11 @@ interface StudentRegisterData {
 interface ProjectData {
   title: string;
   description: string;
-  skills_required: string;
+  skills_required: string[];
   budget: string;
   deadline: string;
   category: string;
+  status?: 'open' | 'in_progress' | 'completed' | 'cancelled';
 }
 
 export const api = {
@@ -90,10 +91,18 @@ export const api = {
   },
 
   async postProject(projectData: ProjectData) {
+    // Convert skills_required array to string for Flask backend
+    const flaskProjectData = {
+      ...projectData,
+      skills_required: Array.isArray(projectData.skills_required) 
+        ? projectData.skills_required.join(', ') 
+        : projectData.skills_required
+    };
+    
     const response = await fetch(`${API_URL}/post-project`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(projectData),
+      body: JSON.stringify(flaskProjectData),
       credentials: 'include'
     });
     if (!response.ok) throw new Error('Failed to post project');

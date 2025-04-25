@@ -45,7 +45,9 @@ export function ProjectCard({
     });
   };
   
-  const skillsList = typeof skills === 'string' ? skills.split(',') : skills;
+  // Handle both string and array cases safely
+  const skillsList = Array.isArray(skills) ? skills : 
+                      (typeof skills === 'string' ? skills.split(',') : []);
   
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-md">
@@ -64,7 +66,7 @@ export function ProjectCard({
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{description}</p>
         <div className="flex flex-wrap gap-1 mb-3">
           {skillsList.map((skill, index) => (
-            <Badge key={index} variant="secondary">{skill.trim()}</Badge>
+            <Badge key={index} variant="secondary">{typeof skill === 'string' ? skill.trim() : skill}</Badge>
           ))}
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm">

@@ -61,12 +61,12 @@ export default function ClientDashboardPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Format skills as array
+    // Format skills as array and ensure status is properly typed
     const formattedProject = {
       ...newProject,
       client_id: user.id,
       skills_required: newProject.skills_required.split(',').map(skill => skill.trim()),
-      status: 'open'
+      status: 'open' as 'open' | 'in_progress' | 'completed' | 'cancelled'
     };
     
     const success = await addProject(formattedProject);

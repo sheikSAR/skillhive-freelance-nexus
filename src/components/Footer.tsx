@@ -1,5 +1,5 @@
 
-import { GitHub, Mail, Twitter } from "lucide-react";
+import { Github, Mail, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
